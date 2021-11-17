@@ -5,7 +5,7 @@ from random import randrange
 
 import argparse
 
-parser = argparse.ArgumentParser(description='Run distributed hyperparameter tuning with ray tune with multinode LSF job submission')
+parser = argparse.ArgumentParser(description='Run distributed ray applications with multinode LSF job submission')
 parser.add_argument("-j", "--jobname", action='store', type=str, help='Name for job',default='RayJob')
 parser.add_argument("-w", "--workdir", type=str, help="Working directory",default='../')
 parser.add_argument("--jobrunner", type=str, help="Path to LSF job submitting and multinode ray runner",default='../raytuneLSF/scripts/job_runner.sh')
