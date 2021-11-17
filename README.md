@@ -11,8 +11,7 @@ Clone repo and cd into the project directory
 ```
 $ conda create -n rayenv python=3.7
 $ conda activate rayenv
-$ conda install --name rayenv pip
-$ pip install ray
+$ pip install ray==1.4.1
 $ git clone https://github.com/oaoni/raytuneLSF.git
 $ cd raytuneLSF
 ```
