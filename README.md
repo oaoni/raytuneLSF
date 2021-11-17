@@ -1,6 +1,6 @@
 # raytuneLSF
 
-Python wrapper for starting distributed Ray clusters with LSF job submission.
+Run distributed ray applications with multinode LSF job submission.
 
 ## Requirements
 ray == 1.4.1 <br>
@@ -9,8 +9,10 @@ ray == 1.4.1 <br>
 Clone repo and cd into the project directory
 
 ```
-$ conda create -n rayenv ray=1.4.1
+$ conda create -n rayenv python=3.7
 $ conda activate rayenv
+$ conda install --name rayenv pip
+$ pip install ray
 $ git clone https://github.com/oaoni/raytuneLSF.git
 $ cd raytuneLSF
 ```
