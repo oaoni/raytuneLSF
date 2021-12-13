@@ -16,6 +16,7 @@ RAYAPP=${13}
 MODELNAME=${14}
 DATAPATH=${15}
 CPUSPERTRIAL=${16}
+APP_ARGS=${17}
 
 echo "Submitting Job..."
 bsub -o %J.o -e %J.e -n $NPROCESSES -R "$RESOURCES" -W $WALLTIME -cwd $CWD -I /usr/bin/bash $HOSTWRITER
@@ -77,7 +78,7 @@ ssh -A $USER@${NODES[0]} << EOF
 
   cd $PWD
   python -c 'import os; print(os.getcwd())'
-  python $RAYAPP --hostip $HOST_IP --port $PORT --rpass $REDIS_PASSWORD --localdir $CWD --modelname $MODELNAME --datapath $DATAPATH --cpus_per_trial $CPUSPERTRIAL
+  python $RAYAPP --hostip $HOST_IP --port $PORT --rpass $REDIS_PASSWORD --localdir $CWD --modelname $MODELNAME --datapath $DATAPATH --cpus_per_trial $CPUSPERTRIAL --app_args $APP_ARGS
 EOF
 #########################
 # End of ray tune script
