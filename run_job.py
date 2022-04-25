@@ -24,7 +24,7 @@ parser.add_argument("--rayapp", type=str, help="Path to distributed application"
 parser.add_argument("--modelname", type=str, help="name of model", default='None')
 parser.add_argument("--datapath", type=str, help="Path to data file", default='None')
 parser.add_argument("--cpus_per_trial", type=str, help="Number of cpus to utilize per trial", default='1')
-parser.add_argument("--app_args", type=str, help="Optional app arguments", default='None')
+parser.add_argument("--app_args", type=str, help="Optional app arguments", default="")
 args = parser.parse_args()
 
 def main():
