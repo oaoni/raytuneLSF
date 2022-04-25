@@ -45,7 +45,7 @@ ssh -A -T $USER@${NODES[0]} << EOF
   source $CONDAENV $RAYENV
   echo "Starting Ray head node"
   #Add command to specify juyter notebook port
-  ray start --head --port=$PORT --redis-password=$REDIS_PASSWORD --dashboard-port=$DASHPORT --num-cpus=$NCPUS --num-gpus=$NGPUS --object-store-memory=$((10**9))
+  ray start --head --port=$PORT --redis-password=$REDIS_PASSWORD --dashboard-port=$DASHPORT --num-cpus=$NCPUS --num-gpus=$NGPUS --object-store-memory=$((16**9))
 EOF
 
 # Create string for ssh forwarding
@@ -65,7 +65,7 @@ do
     echo "Activating Ray environment.."
     source $CONDAENV $RAYENV
     echo "Starting Ray worker node"
-    ray start --address=$HOST_IP:$PORT --redis-password=$REDIS_PASSWORD --num-cpus=$NCPUS --num-gpus=$NGPUS --object-store-memory=$((10**9))
+    ray start --address=$HOST_IP:$PORT --redis-password=$REDIS_PASSWORD --num-cpus=$NCPUS --num-gpus=$NGPUS --object-store-memory=$((16**9))
 EOF
 done
 
@@ -78,13 +78,13 @@ ssh -A $USER@${NODES[0]} << EOF
 
   cd $PWD
   python -c 'import os; print(os.getcwd())'
-  python $RAYAPP --hostip $HOST_IP --port $PORT --rpass $REDIS_PASSWORD --localdir $CWD --modelname $MODELNAME --datapath $DATAPATH --cpus_per_trial $CPUSPERTRIAL --app_args $APP_ARGS
+  eval python $RAYAPP --hostip $HOST_IP --port $PORT --rpass $REDIS_PASSWORD --localdir $CWD --modelname $MODELNAME --datapath $DATAPATH --cpus_per_trial $CPUSPERTRIAL $APP_ARGS
 EOF
 #########################
 # End of ray tune script
 #########################
 
-read -p "Press enter to continue, shutting down all ray clusters, and ending LSF job.."
+# read -p "Press enter to continue, shutting down all ray clusters, and ending LSF job.."
 
 # Shutdown all of the ray clusters
 echo "SHUTTING DOWN ALL RAY CLUSTERS IN 10 SECONDS.."
@@ -110,6 +110,10 @@ ssh -A -T $USER@${NODES[0]} << EOF
   echo "Shutting down Ray head node"
   sleep 1
   ray stop --log-style pretty
+
+  screen -wipe
+  screen -S writer -X quit
+
 EOF
 
 echo "    Closing Ray Dashboard ssh tunnel"
