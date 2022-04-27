@@ -25,6 +25,7 @@ parser.add_argument("--modelname", type=str, help="name of model", default='None
 parser.add_argument("--datapath", type=str, help="Path to data file", default='None')
 parser.add_argument("--cpus_per_trial", type=str, help="Number of cpus to utilize per trial", default='1')
 parser.add_argument("--app_args", type=str, help="Optional app arguments", default="")
+parser.add_argument("--exclude_hosts", nargs="+", help="Hosts to exclude when submitting job", default=[])
 args = parser.parse_args()
 
 def main():
@@ -41,7 +42,9 @@ def main():
     cpusPerworker = args.cpusperworker
     nProcesses = nWorkers * cpusPerworker
     wallTime = args.walltime
-    resources = "rusage[mem={}] span[ptile={}]".format(memPerprocess,cpusPerworker)
+    excludeHosts = args.exclude_hosts
+    excluded_hosts = " select[{}]".format(' && '.join(["hname!={}".format(host) for host in excludeHosts])) if excludeHosts else ""
+    resources = "rusage[mem={}] span[ptile={}]".format(memPerprocess,cpusPerworker) + excluded_hosts
     redisPassword = str(args.redispassword if args.redispassword else randrange(10e12,10e13))
     nGpus = args.ngpus
     condaEnv = args.condaenv
