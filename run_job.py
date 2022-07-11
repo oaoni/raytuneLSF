@@ -11,7 +11,8 @@ parser.add_argument("-w", "--workdir", type=str, help="Working directory",defaul
 parser.add_argument("--jobrunner", type=str, help="Path to LSF job submitting and multinode ray runner",default='../raytuneLSF/scripts/job_runner.sh')
 parser.add_argument("--hostwriter", type=str, help="Path to host node metadata writer",default='../raytuneLSF/scripts/host_writer.sh')
 parser.add_argument("--nworkers", type=int, help="Number of worker nodes",default='2')
-parser.add_argument("--cpusperworker", type=int, help="Number of processes per worker node",default='2')
+parser.add_argument("--cpusperworker", type=int, help="Number of cpu processors per worker node",default='2')
+parser.add_argument("--procperworker", type=int, help="Number of processes per worker node",default=None)
 parser.add_argument("--mempercpu", type=str, help="Memory per process in GBs", default='4')
 parser.add_argument("--walltime", type=str, help="Walltime bsub -W option", default='0:30')
 parser.add_argument("--port", type=str, help="Port number used by ray clusters")
@@ -40,6 +41,8 @@ def main():
     memPerprocess = args.mempercpu
     nWorkers = args.nworkers
     cpusPerworker = args.cpusperworker
+    procPerworker = args.procperworker
+    procPerworker = cpusPerworker if not procPerworker else procPerworker
     nProcesses = nWorkers * cpusPerworker
     wallTime = args.walltime
     excludeHosts = args.exclude_hosts
@@ -59,7 +62,7 @@ def main():
 
     # Run job_runner with required flags from either argparse or yaml
     return_code = subprocess.call([jobRunner,resources,wallTime,runDir,port,
-    redisPassword,str(cpusPerworker),nGpus,hostWriter,str(nProcesses),
+    redisPassword,str(procPerworker),nGpus,hostWriter,str(nProcesses),
     condaEnv,rayEnv,dashPort,rayApp,modelName,dataPath,cpusPerTrial,appArgs])
 
 if __name__ == '__main__':

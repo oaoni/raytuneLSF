@@ -39,6 +39,7 @@ echo "The HOST node is ${NODES[0]}, and there are $NUM_NODES nodes in total"
 
 # Run Ray on nodes
 echo "Starting head node on: ${NODES[0]}"
+echo "    The head node: ${NODES[0]}, can run $NCPUS processes"
 # Start Ray on head node
 ssh -A -T $USER@${NODES[0]} << EOF
   echo "Activating Ray environment.."
@@ -59,7 +60,7 @@ echo "Starting worker nodes"
 for ((i=2;i< $LEN_NODES  ;i+=2));
 do
   echo "    Worker node on: ${NODES[i]}"
-  echo "    The worker node: ${NODES[i]}, can run ${NODES[i-1]} processes"
+  echo "    The worker node: ${NODES[i]}, can run $NCPUS processes on ${NODES[i-1]} processors"
 
     ssh -A -T $USER@${NODES[i]} << EOF
     echo "Activating Ray environment.."
