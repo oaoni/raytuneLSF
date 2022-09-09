@@ -13,6 +13,7 @@ parser.add_argument("--localdir", type=str, help="Path to run directory",default
 parser.add_argument("--modelname", type=str, help="name of model",default='None')
 parser.add_argument("--datapath", type=str, help="Path to data file",default='None')
 parser.add_argument("--cpus_per_trial", type=str, help="Number of cpus to utilize per trial", default="1")
+parser.add_argument("--dashport", type=str, help="Port used for the dashboard", default="8265")
 parser.add_argument("-L","--runlocal", action='store_true', help="Run ray locally",default=False)
 
 args = parser.parse_args()
@@ -25,11 +26,12 @@ MODELNAME = args.modelname
 DATAPATH = args.datapath
 RUNLOCAL = args.runlocal
 CPUS_PER_TRIAL = float(args.cpus_per_trial)
+DASHPORT = int(args.dashport)
 
 if __name__ == '__main__':
 
     if RUNLOCAL:
-        ray.init(object_store_memory=10**9)
+        ray.init(object_store_memory=10**9,dashboard_port=DASHPORT)
     else:
         ray.init(address=":".join([HOST_IP,PORT]),_redis_password=RPASS)
 
@@ -56,3 +58,6 @@ if __name__ == '__main__':
         print('    {} tasks on {}'.format(num_tasks, ip_address))
 
     print('Total elapsed time was: {} seconds'.format(end - start))
+
+    if RUNLOCAL:
+        ray.shutdown()

@@ -15,7 +15,7 @@ parser.add_argument("--cpusperworker", type=int, help="Number of cpu processors 
 parser.add_argument("--procperworker", type=int, help="Number of processes per worker node",default=None)
 parser.add_argument("--mempercpu", type=str, help="Memory per process in GBs", default='4')
 parser.add_argument("--walltime", type=str, help="Walltime bsub -W option", default='0:30')
-parser.add_argument("--port", type=str, help="Port number used by ray clusters")
+parser.add_argument("--port", type=str, help="Port number used by ray clusters to communicate")
 parser.add_argument("--redispassword", type=str, help="Redis password of host node on ray cluster")
 parser.add_argument("--ngpus", type=str, default='0', help="Number of GPUs")
 parser.add_argument("--condaenv", type=str, default='~/anaconda3/bin/activate', help="Path to conda activate")
