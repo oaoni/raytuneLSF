@@ -11,10 +11,10 @@ echo "The HOST node is ${NODES[0]}, and there are $NUM_NODES nodes in total"
 for ((i=2;i< $LEN_NODES  ;i+=2));
 do
   echo "    Worker node on: ${NODES[i]}"
-  echo "    The worker node: ${NODES[i]}, can run ${NODES[i-1]} processes"
+  echo "    The worker node: ${NODES[i]}, has ${NODES[i-1]} symbolic cpu(s)"
 done
 
-#What it actually needs to do, save a temp file,
+#Save temporary file
 echo "Saving host node metadata..."
 printf "$LSB_MCPU_HOSTS\n$HOST_IP\n$PWD\n$LSB_JOBID" > hosts.tmp
 
