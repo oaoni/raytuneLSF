@@ -70,22 +70,20 @@ do
 EOF
 done
 
-######################
+#########################
 # Run ray application
-######################
+#########################
 ssh -A $USER@${NODES[0]} << EOF
   echo "Activating Ray environment on head node.."
   source $CONDAENV $RAYENV
 
   cd $PWD
   python -c 'import os; print(os.getcwd())'
-  eval python $RAYAPP --hostip $HOST_IP --port $PORT --rpass $REDIS_PASSWORD --localdir $CWD --modelname $MODELNAME --datapath $DATAPATH --cpus_per_trial $CPUSPERTRIAL $APP_ARGS
+  eval python $RAYAPP --hostip $HOST_IP --port $PORT --rpass $REDIS_PASSWORD --localdir $CWD --modelname $MODELNAME --datapath $DATAPATH --cpus_per_trial $CPUSPERTRIAL --dashport $DASHPORT $APP_ARGS
 EOF
 #########################
 # End of ray tune script
 #########################
-
-# read -p "Press enter to continue, shutting down all ray clusters, and ending LSF job.."
 
 # Shutdown all of the ray clusters
 echo "SHUTTING DOWN ALL RAY CLUSTERS IN 10 SECONDS.."
@@ -100,7 +98,7 @@ do
     source $CONDAENV $RAYENV
     echo "Shutting down Ray worker node"
     sleep 1
-    ray stop --log-style pretty
+    ray stop --force --log-style pretty
 EOF
 done
 
@@ -110,15 +108,25 @@ ssh -A -T $USER@${NODES[0]} << EOF
   source $CONDAENV $RAYENV
   echo "Shutting down Ray head node"
   sleep 1
-  ray stop --log-style pretty
+  ray stop --force --log-style pretty
 
   screen -wipe
   screen -S writer -X quit
+  echo "Remote screens closed.."
 
 EOF
 
-echo "    Closing Ray Dashboard ssh tunnel"
-ps -ef | grep $USER | grep "ssh -N -L $DASHPORT:127.0.0.1:$DASHPORT $USER@${NODES[0]}" | tr -s ' ' | cut -d" " -f2 | xargs kill
+PROMPT="ps -ef | grep $USER | grep 'ssh -N -L $DASHPORT:127.0.0.1:$DASHPORT $USER@${NODES[0]}' | tr -s ' ' | cut -d' ' -f2 | tail -n +2"
+TUNNEL="ps -ef | grep $USER | grep 'ssh -N -L $DASHPORT:127.0.0.1:$DASHPORT $USER@${NODES[0]}' | tr -s ' ' | cut -d' ' -f2 | sed -n 1p"
+
+if [ -n "$(eval $PROMPT)" ];
+then
+  echo "    Closing Ray Dashboard ssh tunnel.."
+  kill $(eval $TUNNEL)
+
+else
+  echo "    Ray Dashbard tunnel never opened.."
+fi
 
 # Kill bsub job
 bkill $JOBID
